@@ -8,6 +8,7 @@ from langchain_openai import ChatOpenAI
 
 from src.logger.base import BaseLogger
 from src.model.llms import load_llm
+from src.utils import execute_plt_code
 import google.generativeai as genai
 import os
 
@@ -18,7 +19,34 @@ MODEL_NAME = "gemini-1.5-flash"
 api_key = os.getenv("API_KEY")
 
 def process_query(da_agent, query):
-    pass
+    
+    response = da_agent(query)
+
+    action = response(['intermediate_steps'][-1][0].tool_input['query'])
+
+    if "plt" in action:
+        st.write(response["output"])
+
+        fig =execute_plt_code(action, df=st.session_state.df) 
+        if fig:
+            st.pyplot(fig)
+        
+        st.write("**Executed code:**")
+        st.code(action)
+
+        to_display_string = response["output"] + "\n" + f"```python\n{action}\n```"
+        st.session_state.history.append((query, to_display_string))
+
+    else:
+        st.write(response("output"))
+        st.session_state.history.append((query,response["output"]))
+
+def display_chat_history():
+    st.markdown('## Chat history: ')
+    for i, (q, r) in enumerate(st.session_state.history):
+        st.markdown(f"**Query: {i+1}:** {q}")
+        st.markdown(f"**Response: {i+1}:** {r}")
+        st.markdown("----")
 
 
 def main():
@@ -29,7 +57,6 @@ def main():
         page_icon="📊",
         layout="centered"
     )
-
     st.header("📊Smart Data Analysis Tool")
     st.write("welcome")
 
@@ -69,6 +96,8 @@ def main():
             process_query(da_agent, query)
 
     # Display chat history
+    st.divider()
+    display_chat_history()
 
 
 if __name__ == "__main__":
