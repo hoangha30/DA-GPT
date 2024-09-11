@@ -19,7 +19,7 @@ def load_llm(model_name):
         return ChatOpenAI(
             model=model_name,
             temperature=0.0,
-            max_tokens=10000
+            max_tokens=1000
         )
     elif model_name == "gemini-1.5-flash":
         return genai.GenerativeModel(

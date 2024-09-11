@@ -15,7 +15,7 @@ import os
 # Load environment variables
 load_dotenv()
 logger = BaseLogger()
-MODEL_NAME = "gemini-1.5-flash"
+MODEL_NAME = "gpt-3.5-turbo"
 api_key = os.getenv("API_KEY")
 
 def process_query(da_agent, query):
