@@ -22,7 +22,7 @@ def process_query(da_agent, query):
     
     response = da_agent(query)
 
-    action = response(['intermediate_steps'][-1][0].tool_input['query'])
+    action = response['intermediate_steps'][-1][0].tool_input['query']
 
     if "plt" in action:
         st.write(response["output"])
@@ -38,7 +38,7 @@ def process_query(da_agent, query):
         st.session_state.history.append((query, to_display_string))
 
     else:
-        st.write(response("output"))
+        st.write(response["output"])
         st.session_state.history.append((query,response["output"]))
 
 def display_chat_history():
